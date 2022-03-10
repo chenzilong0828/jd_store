@@ -1,3 +1,4 @@
+/* 登录注册页面 */
 <template>
   <div class="wrapper">
     <img
@@ -31,6 +32,7 @@
           class="wrapper__content__input"
           type="text"
           placeholder="请输入用户名"
+          v-model="reUsername"
         />
       </div>
       <div class="wrapper__content">
@@ -38,6 +40,7 @@
           class="wrapper__content__input"
           type="text"
           placeholder="请输入密码"
+          v-model="rePassword"
         />
       </div>
       <div class="wrapper__content">
@@ -45,74 +48,137 @@
           class="wrapper__content__input"
           type="text"
           placeholder="确认密码"
+          v-model="reCheckPassword"
         />
       </div>
     </div>
-    <div class="wrapper__loginBtn" @click="handleLogin">
+    <div class="wrapper__loginBtn" @click="handleLoginOrRegister">
       {{ LoginOrRegister ? "注册" : "登录" }}
     </div>
     <div class="wrapper__bottom">
       <div v-if="!LoginOrRegister">
         <span @click="handleToRegister">立即注册</span> |
-        <span>忘记密码</span>
+        <span @click="handleForgetPsd">忘记密码</span>
       </div>
       <div v-else>
         <span @click="handleToLogin">已有账号去登陆</span>
       </div>
     </div>
+    <ToastView
+      v-if="toastData.toastShow"
+      :message="toastData.toastMessage"
+    ></ToastView>
   </div>
 </template>
 <script>
 import { ref, reactive, toRefs } from "vue";
-import axios from "axios";
 import { useRouter } from "vue-router";
-axios.defaults.headers.common["Content-Type"] =
-  "application/json;charset=UTF-8";
-export default {
-  name: "LoginView",
-  setup() {
-    const data = reactive({
-      username: "",
-      password: "",
-    });
-    const { username, password } = toRefs(data);
-    const LoginOrRegister = ref(false);
-    const router = useRouter();
-    const handleLogin = () => {
-      axios
-        .post(
-          "https://www.fastmock.site/mock/a00c49722c670eba88e12c2ffd824bc0/api/user/login",
-          {
-            username: username.value,
-            password: password.value,
-          }
-        )
-        .then(() => {
+import { post } from "../../utils/request.js";
+import ToastView, { toastEffect } from "../../components/Toast";
+
+/* 登录相关代码逻辑 */
+export const loginOrRegisterEffect = (toastFunc, LoginOrRegister) => {
+  const data = reactive({
+    username: "",
+    password: "",
+  });
+  const registerData = reactive({
+    reUsername: "",
+    rePassword: "",
+    reCheckPassword: "",
+  });
+  const router = useRouter();
+  const { username, password } = toRefs(data);
+  const { reUsername, rePassword, reCheckPassword } = toRefs(registerData);
+  const handleLoginOrRegister = async () => {
+    let url = "";
+    let params = {};
+    if (!LoginOrRegister.value) {
+      url = "/user/login";
+      params = {
+        username: username.value,
+        password: password.value,
+      };
+    } else {
+      url = "/user/register";
+      params = {
+        reUsername: reUsername.value,
+        rePassword: rePassword.value,
+        reCheckPassword: reCheckPassword.value,
+      };
+    }
+    try {
+      const result = await post(url, params);
+      if (result?.result === "success") {
+        if (!LoginOrRegister.value) {
           localStorage.setItem("isLogin", true);
           router.push({ name: "Home" });
-        })
-        .catch(() => {
-          alert("登录失败");
-        });
-    };
+        } else {
+          LoginOrRegister.value = !LoginOrRegister.value;
+          toastFunc("注册成功，请登录!", 3000);
+        }
+      } else {
+        toastFunc("啊嘞，登录失败了诶。_(:з」∠)_", 3000);
+      }
+    } catch (e) {
+      toastFunc("请求失败了诶。_(:з」∠)_", 3000);
+    }
+  };
+  return {
+    username,
+    password,
+    reUsername,
+    rePassword,
+    reCheckPassword,
+    handleLoginOrRegister,
+    LoginOrRegister,
+  };
+};
+
+export default {
+  name: "LoginView",
+  components: { ToastView },
+  setup() {
+    const LoginOrRegister = ref(false);
+    const { toastData, toastFunc } = toastEffect();
+    const {
+      username,
+      password,
+      reUsername,
+      rePassword,
+      reCheckPassword,
+      handleLoginOrRegister,
+    } = loginOrRegisterEffect(toastFunc, LoginOrRegister);
     const handleToRegister = () => {
       LoginOrRegister.value = true;
     };
     const handleToLogin = () => {
       LoginOrRegister.value = false;
     };
+    const handleForgetPsd = () => {
+      toastFunc(
+        "o(╥﹏╥)o~~傻瓜蛋，肿么密码会忘记掉噜。我不管你了（滑稽）",
+        3000
+      );
+    };
     return {
-      handleLogin,
-      handleToRegister,
-      handleToLogin,
-      LoginOrRegister,
       username,
       password,
+      handleLoginOrRegister,
+      handleToRegister,
+      handleToLogin,
+      handleForgetPsd,
+      LoginOrRegister,
+      toastData,
+      toastFunc,
+      reUsername,
+      rePassword,
+      reCheckPassword,
     };
   },
 };
 </script>
-<style lang='scss' scoped>
+<style lang="scss" scoped>
 @import "../../style/viriables.scss";
 .wrapper {
   position: absolute;

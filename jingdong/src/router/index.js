@@ -1,3 +1,4 @@
+/* eslint-disable */
 import { createRouter, createWebHashHistory } from "vue-router";
 import HomeView from "../views/home/Home.vue";
 import LoginView from "../views/login/Login.vue";

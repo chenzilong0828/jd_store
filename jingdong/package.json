@@ -53,7 +53,9 @@
         "double"
       ],
       "comma-dangle": "off",
-      "space-before-function-paren": 0
+      "space-before-function-paren": 0,
+      "no-tabs": "off",
+      "indent":"off"
     }
   },
   "browserslist": [
