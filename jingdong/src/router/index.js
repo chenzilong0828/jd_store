@@ -1,22 +1,25 @@
 /* eslint-disable */
 import { createRouter, createWebHashHistory } from "vue-router";
-import HomeView from "../views/home/Home.vue";
-import LoginView from "../views/login/Login.vue";
 
 const routes = [
   {
     path: "/",
     name: "Home",
-    component: HomeView,
+    component: () => import("../views/home/Home.vue"),//动态加载组件
   },
   {
     path: "/login",
     name: "Login",
-    component: LoginView,
+    component: () => import("../views/login/Login.vue"),//动态加载组件
     beforeEnter: (to, from, next) => {
       const { isLogin } = localStorage;
       isLogin ? next({ name: "Home" }) : next();
     },
+  },
+  {
+    path: "/shop",
+    name: "Shop",
+    component: () => import("../views/shop/Shop.vue"),//动态加载组件
   },
 ];
 
