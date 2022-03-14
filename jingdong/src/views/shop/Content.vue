@@ -29,13 +29,22 @@
               <span class="product__money__oldMoney">{{ item.oldPrice }}</span>
             </div>
             <div class="product__money__num">
-              <div class="product__money__minus">-</div>
-              <span>{{ cartList?.[shopId]?.[item._id]?.count || 0 }}</span>
+              <div
+                class="product__money__minus"
+                @click="
+                  () => {
+                    changeCartCount(shopId, item._id, item, -1);
+                  }
+                "
+              >
+                -
+              </div>
+              <span>{{ item.count || 0 }}</span>
               <div
                 class="product__money__plus"
                 @click="
                   () => {
-                    addCartCount(shopId, item._id, item);
+                    changeCartCount(shopId, item._id, item, 1);
                   }
                 "
               >
@@ -52,7 +61,7 @@
 import { useRoute } from "vue-router";
 import { ref, reactive, toRefs, watchEffect } from "vue";
 import { get } from "../../utils/request.js";
-import { useStore } from "vuex";
+import { useCartEffect } from "./commonCartEffect.js";
 
 const categoryTabs = [
   { name: "全部商品", id: "all" },
@@ -72,6 +81,7 @@ const useTabEffect = () => {
 };
 /* 列表内容相关的逻辑 */
 const useCurrentListEffect = (currentTab) => {
+  const { changeCartCount } = useCartEffect();
   const route = useRoute();
   const content = reactive({
     list: [],
@@ -88,34 +98,24 @@ const useCurrentListEffect = (currentTab) => {
     getContentData();
   });
   const { list } = toRefs(content);
-  return { list };
+  return { list, changeCartCount };
 };
-/* 购物车相关逻辑代码 */
-export const useCartEffect = () => {
-  const store = useStore();
-  const { cartList } = toRefs(store.state);
-  const addCartCount = (shopId, productId, productInfo) => {
-    /* 这里，引入了vuex中的store,然后用store.commit('在store中提前定义好addCartCount方法'，后面跟要带进去的参数) */
-    store.commit("addCartCount", { shopId, productId, productInfo });
-  };
-  return { cartList, addCartCount };
-};
+
 export default {
   name: "ShopContent",
   setup() {
     const route = useRoute();
     const shopId = route.params.id;
     const { currentTab, handleTabClick } = useTabEffect();
-    const { list } = useCurrentListEffect(currentTab);
-    const { cartList, addCartCount } = useCartEffect();
+    const { list, changeCartCount } = useCurrentListEffect(currentTab);
     return {
       shopId,
       list,
       categoryTabs,
       currentTab,
       handleTabClick,
-      cartList,
-      addCartCount,
+      changeCartCount,
+      useCartEffect,
     };
   },
 };

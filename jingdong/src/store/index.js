@@ -13,8 +13,8 @@ export default createStore({
   getters: {
   },
   mutations: {
-    addCartCount(state, payload) {
-      const { shopId, productId, productInfo } = payload
+    changeCartCount(state, payload) {
+      const { shopId, productId, productInfo, num } = payload
       let shopInfo = state.cartList[shopId];
       if (!shopInfo) { shopInfo = {} }
       let product = shopInfo[productId]
@@ -22,7 +22,11 @@ export default createStore({
         product = productInfo
         product.count = 0
       }
-      product.count += 1
+      product.count += num
+      if (product.count < 0) {
+        product.count = 0
+      }
+      if (num > 0) { product.checked = false }
       shopInfo[productId] = product
       state.cartList[shopId] = shopInfo
     }
