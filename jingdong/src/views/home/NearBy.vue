@@ -1,13 +1,13 @@
 <template>
   <div class="nearby">
     <div class="nearby__title">附近店铺</div>
-
-    <ShopInfo
+    <router-link
       v-for="item in nearbyList.value"
+      :to="`/shop/${item._id}`"
       :key="item._id"
-      :item="item"
-      :defaultLine="true"
-    ></ShopInfo>
+    >
+      <ShopInfo :item="item" :defaultLine="true"></ShopInfo>
+    </router-link>
   </div>
 </template>
 <script>
@@ -20,7 +20,6 @@ export const nearbyEffect = () => {
   const getNearbyList = async () => {
     const result = await get("/store/storeList");
     const { success, data } = result;
-    console.log(success, data);
     if (success || data?.length) {
       nearbyList.value = data;
     }
@@ -39,7 +38,6 @@ export default {
 </script>
 <style lang="scss" scoped>
 @import "../../style/viriables.scss";
-@import "../../style/mixins.scss";
 .nearby {
   &__title {
     font-size: 0.18rem;
@@ -47,5 +45,8 @@ export default {
     font-weight: 500;
     margin-top: 0.16rem;
   }
+}
+a {
+  text-decoration: none;
 }
 </style>

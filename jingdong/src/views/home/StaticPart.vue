@@ -108,7 +108,7 @@ export default {
   color: $content-fontcolor;
 }
 .search {
-  background: #f5f5f5;
+  background: $search-bgcolor;
   border-radius: 0.16rem;
   line-height: 0.32rem;
   &__icon {
@@ -127,7 +127,7 @@ export default {
       font-size: 0.14rem;
       border: 0;
       outline: none;
-      background: #f5f5f5;
+      background: $search-bgcolor;
     }
   }
 }
