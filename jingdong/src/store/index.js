@@ -4,8 +4,9 @@ export default createStore({
   state: {
     cartList: {
       // shopId:{
-      //   productId:{
-      //     product
+      //   shopName:'',
+      //   productList:{
+      //     productId:{}
       //   }
       // }
     }

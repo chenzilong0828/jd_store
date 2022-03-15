@@ -5,7 +5,7 @@
   ></ToastView>
   <div class="mask" v-if="cartShow" @click="handleCartShow()"></div>
   <div class="cart">
-    <div class="product" v-if="cartShow">
+    <div class="product" v-if="showCartList">
       <div class="product__header">
         <div
           class="product__header--checked iconfont"
@@ -71,7 +71,10 @@
       </template>
     </div>
     <div class="cart__img">
-      <div class="iconfont cart__img__iconfont" @click="handleCartShow()">
+      <div
+        class="iconfont cart__img__iconfont"
+        @click="handleCartShow(total.count)"
+      >
         &#xe6ba;
       </div>
       <div class="cart__img__redDot">{{ total.count }}</div>
@@ -124,6 +127,19 @@ export const useCartMoneyEffect = (shopId, cartShow, toastFunc) => {
     }
     return result;
   });
+  const showCartList = computed(() => {
+    let result = cartShow;
+    const productList = cartList[shopId]?.productList;
+    let num = 0;
+    for (const i in productList) {
+      // TODO:这里貌似不怎么优雅，先不管了后续再改吧
+      productList[i].count > 0 && num++;
+    }
+    if (num === 0) {
+      result = false;
+    }
+    return result;
+  });
   const handleChangeItemChecked = (shopId, productId) => {
     store.commit("changeItemCheck", { shopId, productId });
   };
@@ -145,13 +161,15 @@ export const useCartMoneyEffect = (shopId, cartShow, toastFunc) => {
     cartList,
     handleCartAllCheck,
     cartShow,
+    showCartList,
   };
 };
 /* 购物车显示隐藏相关逻辑 */
 export const useCartShowEffect = () => {
   const cartShow = ref(false);
-  const handleCartShow = () => {
+  const handleCartShow = (count) => {
     cartShow.value = !cartShow.value;
+    !count && (cartShow.value = false);
   };
   return { cartShow, handleCartShow };
 };
@@ -172,6 +190,7 @@ export default {
       handleCartClear,
       cartList,
       handleCartAllCheck,
+      showCartList,
     } = useCartMoneyEffect(shopId, cartShow, toastFunc);
     return {
       allChecked,
@@ -187,6 +206,7 @@ export default {
       handleCartAllCheck,
       toastData,
       toastFunc,
+      showCartList,
     };
   },
 };
