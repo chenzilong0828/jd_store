@@ -1,11 +1,30 @@
 <template>
+  <ToastView
+    v-if="toastData.toastShow"
+    :message="toastData.toastMessage"
+  ></ToastView>
+  <div class="mask" v-if="cartShow" @click="handleCartShow()"></div>
   <div class="cart">
-    <div class="product">
+    <div class="product" v-if="cartShow">
+      <div class="product__header">
+        <div
+          class="product__header--checked iconfont"
+          v-html="allChecked ? '&#xe618;' : '&#xe619;'"
+          @click="() => handleCartAllCheck()"
+        ></div>
+        <span class="product__header__checkall">全选</span>
+        <div class="product__header__clear">
+          <span @click="() => handleCartClear(shopId, cartShow)"
+            >清空购物车</span
+          >
+        </div>
+      </div>
       <template v-for="item in productList" :key="item._id">
         <div class="product__item" v-if="item.count > 0">
           <div
             class="product__item--checked iconfont"
-            v-html="item.checked ? '&#xe6f7;' : '&#xe619;'"
+            v-html="item.checked ? '&#xe618;' : '&#xe619;'"
+            @click="handleChangeItemChecked(shopId, item._id)"
           ></div>
           <img :src="item.imgUrl" alt="" class="product__item__img" />
           <div class="product__content">
@@ -33,7 +52,7 @@
                   -
                 </div>
                 <span>
-                  {{ item.count || 0 }}
+                  {{ cartList[shopId]?.productList?.[item._id]?.count || 0 }}
                 </span>
                 <div
                   class="product__money__plus"
@@ -52,7 +71,9 @@
       </template>
     </div>
     <div class="cart__img">
-      <div class="iconfont cart__img__iconfont">&#xe6ba;</div>
+      <div class="iconfont cart__img__iconfont" @click="handleCartShow()">
+        &#xe6ba;
+      </div>
       <div class="cart__img__redDot">{{ total.count }}</div>
     </div>
     <div class="cart__money">
@@ -65,45 +86,123 @@
 <script>
 import { useRoute } from "vue-router";
 import { useStore } from "vuex";
-import { computed } from "vue";
+import { computed, ref } from "vue";
 import { useCartEffect } from "./commonCartEffect.js";
+import ToastView, { toastEffect } from "../../components/Toast";
 /* 获取购物车计算逻辑 */
-export const useCartMoneyEffect = (shopId) => {
+export const useCartMoneyEffect = (shopId, cartShow, toastFunc) => {
   const { changeCartCount } = useCartEffect();
   const store = useStore();
   const cartList = store.state.cartList;
   const total = computed(() => {
-    const productList = cartList[shopId];
+    const productList = cartList[shopId]?.productList;
     let count = 0; // 数量
     let money = 0; // 总金额
     if (productList) {
       for (const i in productList) {
         count += productList[i].count;
-        money += productList[i].count * productList[i].price;
+        if (productList[i].checked) {
+          money += productList[i].count * productList[i].price;
+        }
       }
       money = money.toFixed(2);
     }
     return { count, money };
   });
   const productList = computed(() => {
-    const productList = cartList[shopId] || [];
+    const productList = cartList[shopId]?.productList || [];
     return productList;
   });
-  return { total, productList, changeCartCount };
+  const allChecked = computed(() => {
+    const productList = cartList[shopId]?.productList;
+    let result = true;
+    for (const i in productList) {
+      if (productList[i].count > 0 && !productList[i].checked) {
+        // 如果商品的数量大于0的同时，商品又是未选中，则取消全选
+        result = false;
+      }
+    }
+    return result;
+  });
+  const handleChangeItemChecked = (shopId, productId) => {
+    store.commit("changeItemCheck", { shopId, productId });
+  };
+  const handleCartClear = (shopId) => {
+    store.commit("handleCartClear", { shopId });
+    cartShow.value = false;
+    toastFunc("购物车已清空，请重新选购哦~", 3000);
+  };
+  const handleCartAllCheck = () => {
+    store.commit("handleCartAllCheck", { shopId, allChecked });
+  };
+  return {
+    allChecked,
+    total,
+    productList,
+    changeCartCount,
+    handleChangeItemChecked,
+    handleCartClear,
+    cartList,
+    handleCartAllCheck,
+    cartShow,
+  };
+};
+/* 购物车显示隐藏相关逻辑 */
+export const useCartShowEffect = () => {
+  const cartShow = ref(false);
+  const handleCartShow = () => {
+    cartShow.value = !cartShow.value;
+  };
+  return { cartShow, handleCartShow };
 };
 export default {
   name: "CartView",
+  components: { ToastView },
   setup() {
     const route = useRoute();
     const shopId = route.params.id;
-    const { total, productList, changeCartCount } = useCartMoneyEffect(shopId);
-    return { total, productList, shopId, changeCartCount };
+    const { toastData, toastFunc } = toastEffect();
+    const { cartShow, handleCartShow } = useCartShowEffect();
+    const {
+      allChecked,
+      total,
+      productList,
+      changeCartCount,
+      handleChangeItemChecked,
+      handleCartClear,
+      cartList,
+      handleCartAllCheck,
+    } = useCartMoneyEffect(shopId, cartShow, toastFunc);
+    return {
+      allChecked,
+      total,
+      productList,
+      shopId,
+      changeCartCount,
+      handleChangeItemChecked,
+      handleCartClear,
+      cartList,
+      handleCartShow,
+      cartShow,
+      handleCartAllCheck,
+      toastData,
+      toastFunc,
+    };
   },
 };
 </script>
 <style lang="scss" scoped>
 @import "../../style/mixins.scss";
 @import "../../style/viriables.scss";
+.mask {
+  position: fixed;
+  top: 0;
+  right: 0;
+  left: 0;
+  bottom: 0;
+  background: rgba(0, 0, 0, 0.5);
+  z-index: 1;
+}
 .cart {
   border-top: 0.01rem solid $content-bg;
   position: absolute;
@@ -114,6 +213,8 @@ export default {
   width: 100%;
   left: 0;
   right: 0;
+  background: #fff;
+  z-index: 2;
   &__img {
     width: 0.76rem;
     position: relative;
@@ -161,12 +262,36 @@ export default {
     background: #4fb0f9;
   }
   .product {
-    overflow-y: scroll;
-    flex: 1;
     position: absolute;
     bottom: 0.49rem;
     background: #fff;
     width: 100%;
+    max-height: 5rem;
+    overflow-y: scroll;
+    &__header {
+      line-height: 0.5rem;
+      height: 0.5rem;
+      background: #fff;
+      margin: 0 0.16rem;
+      border-bottom: 1px solid #f1f1f1;
+      display: flex;
+      align-items: center;
+      &--checked {
+        margin-right: 0.1rem;
+        font-size: 0.2rem;
+        color: #0091ff;
+      }
+      &__checkall {
+        font-size: 0.14rem;
+        color: #333333;
+      }
+      &__clear {
+        flex: 1;
+        font-size: 0.14rem;
+        color: #333333;
+        text-align: right;
+      }
+    }
     &__item {
       padding: 0.12rem 0;
       margin: 0 0.16rem;

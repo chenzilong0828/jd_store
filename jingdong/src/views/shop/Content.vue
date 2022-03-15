@@ -33,18 +33,20 @@
                 class="product__money__minus"
                 @click="
                   () => {
-                    changeCartCount(shopId, item._id, item, -1);
+                    changeCartCount(shopId, item._id, item, -1, shopName);
                   }
                 "
               >
                 -
               </div>
-              <span>{{ item.count || 0 }}</span>
+              <span>{{
+                cartList[shopId]?.productList[item._id]?.count || 0
+              }}</span>
               <div
                 class="product__money__plus"
                 @click="
                   () => {
-                    changeCartCount(shopId, item._id, item, 1);
+                    changeCartCount(shopId, item._id, item, 1, shopName);
                   }
                 "
               >
@@ -81,7 +83,7 @@ const useTabEffect = () => {
 };
 /* 列表内容相关的逻辑 */
 const useCurrentListEffect = (currentTab) => {
-  const { changeCartCount } = useCartEffect();
+  const { cartList, changeCartCount } = useCartEffect();
   const route = useRoute();
   const content = reactive({
     list: [],
@@ -98,16 +100,18 @@ const useCurrentListEffect = (currentTab) => {
     getContentData();
   });
   const { list } = toRefs(content);
-  return { list, changeCartCount };
+  return { list, cartList, changeCartCount };
 };
 
 export default {
   name: "ShopContent",
+  props: ["shopName"],
   setup() {
     const route = useRoute();
     const shopId = route.params.id;
     const { currentTab, handleTabClick } = useTabEffect();
-    const { list, changeCartCount } = useCurrentListEffect(currentTab);
+    const { list, changeCartCount, cartList } =
+      useCurrentListEffect(currentTab);
     return {
       shopId,
       list,
@@ -116,6 +120,7 @@ export default {
       handleTabClick,
       changeCartCount,
       useCartEffect,
+      cartList,
     };
   },
 };

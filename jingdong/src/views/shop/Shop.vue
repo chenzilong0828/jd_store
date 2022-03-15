@@ -10,7 +10,7 @@
       </div>
     </div>
     <ShopInfo :item="data.item" :defaultLine="false"></ShopInfo>
-    <ShopContent></ShopContent>
+    <ShopContent :shopName="data.item.name"></ShopContent>
     <Cart></Cart>
   </div>
 </template>
