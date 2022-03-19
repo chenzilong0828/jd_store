@@ -1,15 +1,14 @@
 import { createStore } from 'vuex'
 
+const setLocalCartList = (state) => { // 存放到本地存储中
+  const { cartList } = state
+  const cartListString = JSON.stringify(cartList)
+  localStorage.cartList = cartListString
+}
+
 export default createStore({
   state: {
-    cartList: {
-      // shopId:{
-      //   shopName:'',
-      //   productList:{
-      //     productId:{}
-      //   }
-      // }
-    }
+    cartList: JSON.parse(localStorage.cartList) || {}
   },
   getters: {
   },
@@ -29,15 +28,18 @@ export default createStore({
       (product.count < 0) && (product.count = 0); // 如果商品的数量小于0，则默认商品的数量为0
       shopInfo.productList[productId] = product
       state.cartList[shopId] = shopInfo
+      setLocalCartList(state)
     },
     changeItemCheck(state, payload) {
       const { shopId, productId } = payload
       const product = state.cartList[shopId].productList[productId]
       product.checked = !product.checked;
+      setLocalCartList(state)
     },
     handleCartClear(state, payload) {
       const { shopId } = payload
       state.cartList[shopId].productList = {}
+      setLocalCartList(state)
     },
     handleCartAllCheck(state, payload) {
       const { shopId, allChecked } = payload
@@ -46,12 +48,14 @@ export default createStore({
       for (const key in product) {
         product[key].checked = result
       }
+      setLocalCartList(state)
     },
     changeShopName(state, payload) {
       const { shopId, shopName } = payload;
       const productInfo = state.cartList[shopId] || { shopName: '', productList: {} }
       productInfo.shopName = shopName
       state.cartList[shopId] = productInfo
+      setLocalCartList(state)
     }
   },
   actions: {

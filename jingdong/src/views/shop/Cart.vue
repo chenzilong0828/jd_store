@@ -3,9 +3,13 @@
     v-if="toastData.toastShow"
     :message="toastData.toastMessage"
   ></ToastView>
-  <div class="mask" v-if="cartShow" @click="handleCartShow()"></div>
+  <div
+    class="mask"
+    v-if="cartShow && total.count"
+    @click="handleCartShow()"
+  ></div>
   <div class="cart">
-    <div class="product" v-if="showCartList">
+    <div class="product" v-if="cartShow && total.count">
       <div class="product__header">
         <div
           class="product__header--checked iconfont"
@@ -83,7 +87,9 @@
       <span class="cart__money__all">总计：</span>
       <span class="cart__money__count">&yen; {{ total.money }}</span>
     </div>
-    <div class="cart__goSettlement">去结算</div>
+    <router-link :to="{ path: `/orderConfirmation/${shopId}` }">
+      <div class="cart__goSettlement">去结算</div>
+    </router-link>
   </div>
 </template>
 <script>
@@ -110,6 +116,10 @@ export const useCartMoneyEffect = (shopId, cartShow, toastFunc) => {
       }
       money = money.toFixed(2);
     }
+    if (count === 0) {
+      cartShow.value = false;
+    }
+
     return { count, money };
   });
   const productList = computed(() => {
@@ -124,19 +134,6 @@ export const useCartMoneyEffect = (shopId, cartShow, toastFunc) => {
         // 如果商品的数量大于0的同时，商品又是未选中，则取消全选
         result = false;
       }
-    }
-    return result;
-  });
-  const showCartList = computed(() => {
-    let result = cartShow;
-    const productList = cartList[shopId]?.productList;
-    let num = 0;
-    for (const i in productList) {
-      // TODO:这里貌似不怎么优雅，先不管了后续再改吧
-      productList[i].count > 0 && num++;
-    }
-    if (num === 0) {
-      result = false;
     }
     return result;
   });
@@ -161,7 +158,6 @@ export const useCartMoneyEffect = (shopId, cartShow, toastFunc) => {
     cartList,
     handleCartAllCheck,
     cartShow,
-    showCartList,
   };
 };
 /* 购物车显示隐藏相关逻辑 */
@@ -190,7 +186,6 @@ export default {
       handleCartClear,
       cartList,
       handleCartAllCheck,
-      showCartList,
     } = useCartMoneyEffect(shopId, cartShow, toastFunc);
     return {
       allChecked,
@@ -206,7 +201,6 @@ export default {
       handleCartAllCheck,
       toastData,
       toastFunc,
-      showCartList,
     };
   },
 };
@@ -235,6 +229,10 @@ export default {
   right: 0;
   background: #fff;
   z-index: 2;
+  a {
+    flex: 1;
+    text-decoration: none;
+  }
   &__img {
     width: 0.76rem;
     position: relative;
@@ -275,7 +273,6 @@ export default {
   }
   &__goSettlement {
     flex: 1;
-    width: 0.1rem;
     text-align: center;
     font-size: 0.14rem;
     color: $white-bg;

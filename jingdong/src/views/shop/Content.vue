@@ -75,7 +75,7 @@ const categoryTabs = [
 ];
 /* tab切换相关逻辑 */
 const useTabEffect = () => {
-  const currentTab = ref(categoryTabs[0].name);
+  const currentTab = ref(categoryTabs[0].id);
   const handleTabClick = (tab) => {
     currentTab.value = tab;
   };

@@ -17,10 +17,20 @@ const routes = [
     },
   },
   {
+    path: "/orderConfirmation/:id",
+    name: "OrderConfirmation",
+    component: () => import('../views/orderConfirmation/OrderConfirmation.vue')
+  },
+  {
     path: "/shop/:id",
     name: "Shop",
     component: () => import("../views/shop/Shop.vue"),//动态加载组件
   },
+  {
+    path: '/cart',
+    name: 'Cart',
+    component: () => import("../views/cart/Cart.vue"),//动态加载组件
+  }
 ];
 
 const router = createRouter({
