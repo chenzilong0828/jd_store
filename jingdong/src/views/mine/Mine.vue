@@ -1,14 +1,14 @@
 <template>
   <div class="warpper">
-    <div class="header">我的订单</div>
+    <div class="header">我的</div>
   </div>
 
-  <DockerBottom :activeItem="1"></DockerBottom>
+  <DockerBottom :activeItem="3"></DockerBottom>
 </template>
 <script>
 import DockerBottom from "../../components/Docker";
 export default {
-  name: "CartView",
+  name: "MineView",
   components: { DockerBottom },
 };
 </script>

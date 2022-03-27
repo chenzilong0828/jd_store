@@ -120,10 +120,10 @@ export default {
   }
   &__input {
     display: inline-block;
-    width: calc(100% - 50px);
-    margin-left: 20px;
+    width: calc(100% - 0.5rem);
+    margin-left: 0.2rem;
     input {
-      width: calc(100% - 20px);
+      width: calc(100% - 0.2rem);
       font-size: 0.14rem;
       border: 0;
       outline: none;

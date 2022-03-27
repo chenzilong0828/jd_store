@@ -88,7 +88,7 @@
       <span class="cart__money__count">&yen; {{ total.money }}</span>
     </div>
     <router-link :to="{ path: `/orderConfirmation/${shopId}` }">
-      <div class="cart__goSettlement">去结算</div>
+      <div class="cart__goSettlement" v-show="total.count > 0">去结算</div>
     </router-link>
   </div>
 </template>
@@ -96,7 +96,7 @@
 import { useRoute } from "vue-router";
 import { useStore } from "vuex";
 import { computed, ref } from "vue";
-import { useCartEffect } from "./commonCartEffect.js";
+import { useCartEffect } from "../../effects/useCommonCartEffect.js";
 import ToastView, { toastEffect } from "../../components/Toast";
 /* 获取购物车计算逻辑 */
 export const useCartMoneyEffect = (shopId, cartShow, toastFunc) => {
@@ -290,7 +290,7 @@ export default {
       height: 0.5rem;
       background: #fff;
       margin: 0 0.16rem;
-      border-bottom: 1px solid #f1f1f1;
+      border-bottom: .01rem solid #f1f1f1;
       display: flex;
       align-items: center;
       &--checked {
@@ -312,7 +312,7 @@ export default {
     &__item {
       padding: 0.12rem 0;
       margin: 0 0.16rem;
-      border-bottom: 1px solid #f1f1f1;
+      border-bottom: .01rem solid #f1f1f1;
       height: 0.46rem;
       display: flex;
       align-items: center;
@@ -381,7 +381,7 @@ export default {
           vertical-align: middle;
         }
         &__minus {
-          border: 1px solid #666666;
+          border: .01rem solid #666666;
           color: #666666;
           border-radius: 50%;
         }

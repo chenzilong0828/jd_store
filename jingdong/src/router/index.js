@@ -5,12 +5,14 @@ const routes = [
   {
     path: "/",
     name: "Home",
-    component: () => import("../views/home/Home.vue"),//动态加载组件
+    component: () => import("../views/home/Home.vue"), //动态加载组件
   },
   {
     path: "/login",
     name: "Login",
-    component: () => import("../views/login/Login.vue"),//动态加载组件
+    component: () => import("../views/login/Login.vue"), //动态加载组件
+    //to是当用户点击进入当前页面的时候,我们可以进行一些拦截设置
+    //from当来自其他页面进入当前页面的时候，我们也可以进行拦截提示用户
     beforeEnter: (to, from, next) => {
       const { isLogin } = localStorage;
       isLogin ? next({ name: "Home" }) : next();
@@ -19,18 +21,28 @@ const routes = [
   {
     path: "/orderConfirmation/:id",
     name: "OrderConfirmation",
-    component: () => import('../views/orderConfirmation/OrderConfirmation.vue')
+    component: () => import("../views/orderConfirmation/OrderConfirmation.vue"),
   },
   {
     path: "/shop/:id",
     name: "Shop",
-    component: () => import("../views/shop/Shop.vue"),//动态加载组件
+    component: () => import("../views/shop/Shop.vue"), //动态加载组件
   },
   {
-    path: '/cart',
-    name: 'Cart',
-    component: () => import("../views/cart/Cart.vue"),//动态加载组件
-  }
+    path: "/cart",
+    name: "Cart",
+    component: () => import("../views/cart/Cart.vue"), //动态加载组件
+  },
+  {
+    path: "/order",
+    name: "Order",
+    component: () => import("../views/order/Order.vue"), //动态加载组件
+  },
+  {
+    path: "/mine",
+    name: "Mine",
+    component: () => import("../views/mine/Mine.vue"), //动态加载组件
+  },
 ];
 
 const router = createRouter({

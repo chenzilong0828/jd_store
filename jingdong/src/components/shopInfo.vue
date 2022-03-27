@@ -34,12 +34,12 @@ export default {
   &__left {
     height: 0.56rem;
     width: 0.56rem;
-    margin-right: 16px;
+    margin-right: 0.16rem;
   }
   &__right {
     flex: 1;
-    padding-bottom: 12px;
-    border-bottom: 1px solid #f1f1f1;
+    padding-bottom: 0.12rem;
+    border-bottom: 0.01rem solid #f1f1f1;
     &__line {
       border-bottom: 0;
     }

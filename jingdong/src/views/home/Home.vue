@@ -4,13 +4,13 @@
       <StaticPart></StaticPart>
       <NearBy></NearBy>
     </div>
-    <DockerBottom></DockerBottom>
+    <DockerBottom :activeItem="0"></DockerBottom>
   </div>
 </template>
 <script>
 import StaticPart from "./StaticPart";
 import NearBy from "./NearBy";
-import DockerBottom from "./Docker";
+import DockerBottom from "../../components/Docker";
 export default {
   name: "HomeView",
   components: { StaticPart, NearBy, DockerBottom },

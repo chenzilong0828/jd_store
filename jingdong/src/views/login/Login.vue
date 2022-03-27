@@ -207,7 +207,7 @@ export default {
       font-size: 0.16rem;
       color: $content-notice-fontcolor;
       letter-spacing: 0;
-      line-height: 24px;
+      line-height: .24rem;
       border: 0;
       outline: none;
       background: #f9f9f9;

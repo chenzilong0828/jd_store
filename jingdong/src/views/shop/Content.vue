@@ -63,7 +63,7 @@
 import { useRoute } from "vue-router";
 import { ref, reactive, toRefs, watchEffect } from "vue";
 import { get } from "../../utils/request.js";
-import { useCartEffect } from "./commonCartEffect.js";
+import { useCartEffect } from "../../effects/useCommonCartEffect.js";
 
 const categoryTabs = [
   { name: "全部商品", id: "all" },
@@ -136,7 +136,7 @@ export default {
   bottom: 0.5rem;
   width: 100%;
   .category {
-    width: 76px;
+    width: 0.76rem;
     background: #f5f5f5;
     &__item {
       height: 0.4rem;
@@ -155,7 +155,7 @@ export default {
     &__item {
       padding: 0.12rem 0;
       margin: 0 0.16rem;
-      border-bottom: 1px solid #f1f1f1;
+      border-bottom: 0.01rem solid #f1f1f1;
       height: 0.68rem;
       display: flex;
       &__img {
@@ -224,7 +224,7 @@ export default {
           vertical-align: middle;
         }
         &__minus {
-          border: 1px solid #666666;
+          border: 0.01rem solid #666666;
           color: #666666;
           border-radius: 50%;
         }
